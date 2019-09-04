@@ -1,0 +1,19 @@
+<svg viewBox="0 0 148 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="rank-bar" id="rank-bar">
+  <rect class="track" id="track" x="8" y="7" width="132" height="2" fill="#425066"/>
+    <g class="node" id="node">
+      <circle class="node-center" id="node-center" cx="8" cy="8" r="4" fill="#425066"/>
+      <circle class="node-active-indicator fourth" id="node-active-indicator" cx="8" cy="8" r="7" stroke="#425066" stroke-width="2"/>
+  </g>
+  <g class="node" id="node_2">
+    <circle class="node-center" id="node-center_2" cx="52" cy="8" r="4" fill="#425066"/>
+    <circle class="node-active-indicator third" id="node-active-indicator_2" cx="52" cy="8" r="7" stroke="#425066" stroke-width="2"/>
+  </g>
+  <g class="node" id="node_3">
+    <circle class="node-center" id="node-center_3" cx="96" cy="8" r="4" fill="#425066"/>
+    <circle class="node-active-indicator second" id="node-active-indicator_3" cx="96" cy="8" r="7" stroke="#425066" stroke-width="2"/>
+  </g>
+  <g class="node" id="node_4">
+    <circle class="node-center" id="node-center_4" cx="140" cy="8" r="4" fill="#425066"/>
+    <circle class="node-active-indicator first" id="node-active-indicator_4" cx="140" cy="8" r="7" stroke="#425066" stroke-width="2"/>
+  </g>
+</svg>

@@ -1,0 +1,58 @@
+{
+  "attract": {
+    "title": "Asteroid alert!",
+    "body": "Raise your arms above<br>your head to take control<br>of the shields."
+  },
+  "calibration": {
+    "title": "Arm the shields",
+    "body": "To continue,<br>activate all 7 shields<br>with your arms."
+  },
+  "error": {
+    "title": "Still there?",
+    "body": "Make sure you're<br>still inside the frame, and no<br>one else is in view."
+  },
+  "no-video": {
+    "title": "Video Unavailable",
+    "body": "Access to the camera is required<br>to play this game. Allow camera<br>access to continue."
+  },
+  "generic-error": {
+    "title": "Error Title",
+    "body": "A brief and friendly<br>description of the problem, and suggestions for fixing it."
+  },
+  "loading-pose-model" : "Loading pose<br>estimation model...",
+  "share": {
+    "title": "All clear!",
+    "body": "The spacecraft<br> has reached a safe area.<br>Nice work.",
+    "share-text": "Share the experience",
+    "share-link": "g.co/PoseShield",
+    "share-url": "https://g.co/PoseShield",
+    "roadshow-text": "I blocked <score> asteroids and got ranked as <rank> playing Pose Shield at #TensorFlowRoadshow! Check it out at g.co/PoseShield",
+    "world-text": "I blocked <score> asteroids and got ranked as <rank> playing Pose Shield at #TensorFlowWorld! Check it out at g.co/PoseShield",
+    "web-text": "I blocked <score> asteroids and got ranked as <rank> playing Pose Shield! Check it out at g.co/PoseShield", 
+    "tweet-hashtag": "TFPoseShield, TensorFlow"
+  },
+  "asteroids-blocked": "asteroids blocked",
+  "ranks": {
+    "level": "level",
+    "first": "Expert",
+    "second": "Pro",
+    "third": "Apprentice",
+    "fourth": "Novice"
+  },
+  "links":{
+    "tensorflow": {
+      "link": "TensorFlow.js",
+      "url": "https://www.tensorflow.org/js"
+    },
+    "posenet": {
+      "link": "PoseNet",
+      "url": "https://www.tensorflow.org/lite/models/pose_estimation/overview"
+    }
+  },
+  "gameplay-text":{
+    "tensorflow": "Tensorflow",
+    "tensorflowjs": "Tensorflow.js",
+    "posenet-model": "Posenet Model",
+    "fps-title": "fps"
+  }
+}

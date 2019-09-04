@@ -1,0 +1,18 @@
+<svg id="asteroid-warning-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 241.33 51">
+  <defs>
+    <style>
+      .cls-1{font-size:14.2px;font-family:RobotoMono-Bold, Roboto Mono;font-weight:700;letter-spacing:0.1em;}.cls-1,.cls-2{fill:#fff;}
+    </style>
+  </defs>
+  <title>
+    Asset 25
+  </title>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="Minimap">
+      <text class="cls-1" transform="translate(12.5 25.47) scale(1.01 1)">
+        ASTEROID WARNING
+      </text>
+      <path d="M219.71,0H0V51H86.45l6.33-10H241.33ZM218,29.83a1.87,1.87,0,0,1,.66-.42,2.48,2.48,0,0,1,.89-.15,2.41,2.41,0,0,1,.87.15,1.87,1.87,0,0,1,.66.42,1.69,1.69,0,0,1,.43.62,2.08,2.08,0,0,1,0,1.55,1.74,1.74,0,0,1-.43.61,2,2,0,0,1-.66.4,2.41,2.41,0,0,1-.87.15,2.48,2.48,0,0,1-.89-.15,2,2,0,0,1-.66-.4,1.85,1.85,0,0,1-.42-.61,2.22,2.22,0,0,1,0-1.55A1.79,1.79,0,0,1,218,29.83Zm-.3-15.45h3.71l-.21,12.09h-3.29ZM1,40V1H219.11V1L197.4,40Z" class="exclamation cls-2"/>
+    </g>
+  </g>
+</svg>

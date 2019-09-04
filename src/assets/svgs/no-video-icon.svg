@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 99.48 99.81">
+  <defs>
+    <style>
+      .cls-1{fill:none;stroke:#fff;stroke-width:2.43px;}.cls-2{fill:#fff;}
+    </style>
+  </defs>
+  <title>
+    no-video-icon
+  </title>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="Divided_Input_Panel" data-name="Divided Input Panel">
+      <g id="Input_Skeleton" data-name="Input Skeleton">
+        <ellipse cx="49.74" cy="49.91" class="cls-1" rx="48.52" ry="48.69"/>
+        <path d="M69.15,39.66,61,47.86V40.68a2.05,2.05,0,0,0-2-2H46.31L69.15,61.55ZM32.92,30.43,30.33,33l5.58,5.6H34.42a2.05,2.05,0,0,0-2.05,2v20.5a2.05,2.05,0,0,0,2.05,2H58.93A2,2,0,0,0,60,62.86l6.51,6.52,2.6-2.6Z" class="cls-2"/>
+      </g>
+    </g>
+  </g>
+</svg>

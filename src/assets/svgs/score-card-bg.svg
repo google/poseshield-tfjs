@@ -1,0 +1,21 @@
+<svg id="score-card" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 331.1 261.62">
+  <defs>
+    <style>
+      .cls-1{fill:url(#Gradient_Orange);}
+    </style>
+    <linearGradient id="Gradient_Orange" x1="277.83" x2="608.93" y1="130.81" y2="130.81" gradientTransform="translate(-277.83)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff6f00"/>
+      <stop offset="1" stop-color="#ffa800"/>
+    </linearGradient>
+  </defs>
+  <title>
+    score-card-bg
+  </title>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="Divided_Input_Panel" data-name="Divided Input Panel">
+      <g id="Score_Card" data-name="Score Card">
+        <path d="M0,261.62H288.4c25.62-23.27,17.08-15.53,42.7-38.79V0H0Z" class="cls-1"/>
+      </g>
+    </g>
+  </g>
+</svg>
