@@ -1,7 +1,7 @@
 {
   "attract": {
     "title": "Asteroid alert!",
-    "body": "Raise your arms above<br>your head to take control<br>of the shields."
+    "body": "Position your body within the<br>frame. Raise your arms above<br>your head to take control of<br>the shields."
   },
   "calibration": {
     "title": "Arm the shields",
@@ -9,11 +9,11 @@
   },
   "error": {
     "title": "Still there?",
-    "body": "Make sure you're<br>still inside the frame, and no<br>one else is in view."
+    "body": "Make sure your whole<br>body is in the frame, and<br>no one else is visible."
   },
   "no-video": {
     "title": "Video Unavailable",
-    "body": "Access to the camera is required<br>to play this game. Allow camera<br>access to continue."
+    "body": "Camera access is required<br>to play this game. Please allow<br>camera access and refresh<br>this page."
   },
   "generic-error": {
     "title": "Error Title",
@@ -26,10 +26,8 @@
     "share-text": "Share the experience",
     "share-link": "g.co/PoseShield",
     "share-url": "https://g.co/PoseShield",
-    "roadshow-text": "I blocked <score> asteroids and got ranked as <rank> playing Pose Shield at #TensorFlowRoadshow! Check it out at g.co/PoseShield",
-    "world-text": "I blocked <score> asteroids and got ranked as <rank> playing Pose Shield at #TensorFlowWorld! Check it out at g.co/PoseShield",
     "web-text": "I blocked <score> asteroids and got ranked as <rank> playing Pose Shield! Check it out at g.co/PoseShield", 
-    "tweet-hashtag": "TFPoseShield, TensorFlow"
+    "tweet-hashtag": "TFPoseShield,TensorFlow"
   },
   "asteroids-blocked": "asteroids blocked",
   "ranks": {

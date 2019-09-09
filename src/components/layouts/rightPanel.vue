@@ -49,17 +49,11 @@ export default {
   width: 33.333%;
 
   .message-block {
-    bottom: 0;
     display: block;
-    height: inherit;
-    left: 0;
-    margin: auto;
+    height: auto;
     opacity: 0;
-    padding: 2.08vw 0;
     position: absolute;
-    right: 0;
     text-align: center;
-    top: 0;
     transition: opacity .4s cubic-bezier(.4, 0, .4, 1) 0s;
     width: 100%;
   }

@@ -21,9 +21,7 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 let attractTimerId;
-const timeoutMin = 0.5;
 const gameTimerSeconds = 60;
-const totalTimeout = 1000 * 60 * timeoutMin;
 
 export default new Vuex.Store({
   state: {
@@ -58,7 +56,8 @@ export default new Vuex.Store({
     asteroidHits: 0,
     asteroidBlocks: 30,
     asteroidBlocksText: '30',
-    sharing: true,
+    share_qr: true,
+    share_link: true,
     asteroidGroup: 0,
     modelStride: 16,
     minPartConfidence: .5,
@@ -67,7 +66,10 @@ export default new Vuex.Store({
     multiplier: .5,
     noVideo: false,
     errorState: false,
-    venue: 'web',
+    globalTimeout: 15000,
+    mode: 'default',
+    speed: 'default',
+    hideCursor: false,
   },
   getters: {
     activeState: (state) => {
@@ -129,7 +131,6 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-
     // Application state manager
     setStates(state) {
       if (state.noVideo === true) {
@@ -156,13 +157,13 @@ export default new Vuex.Store({
           state.calibrated && !state.gameCompleted) {
           // In game state - toggling between three states;
           // Error, Countdown, Playing
-          if (!state.hasPerson) {
+          if (state.gameCountDownToPlay !== 0) {
+            // Game state - Need to Countdown
+            // Setting Countdown state
+            state.gameState = 'countdown';
+          } else if (!state.hasPerson) {
             // Game state - No person detected - Error state
             state.gameState = 'error';
-          } else if (state.gameCountDownToPlay !== 0) {
-            // Game state - Person Detected
-            // - Need to Countdown - Countdown state
-            state.gameState = 'countdown';
           } else {
             // Game state - Person Detected - Countdown is zero - Playing etate
             state.gameState = 'playing';
@@ -177,13 +178,27 @@ export default new Vuex.Store({
         } else if (state.activeState === 'attract') {
           // Application is in attract
           // resetting application states
-          state.asteroidHits = 0;
-          state.asteroidBlocks = 30;
-          state.asteroidCounter = 30;
-          state.gameScore = 1;
-          state.gameRank = 'first';
-          state.gameTimeCountDown = state.gameTime;
-          state.gameCountDownToPlay = 3;
+          setTimeout(function() {
+            state.asteroidBlocksText = '30';
+            state.asteroidBlocks = 30;
+            state.asteroidCounter = 30;
+
+            if (state.speed == 'frantic') {
+              state.asteroidCounter = 60;
+              state.asteroidBlocks = 60;
+              state.asteroidBlocksText = '60';
+            } else if (state.speed == 'relaxed') {
+              state.asteroidCounter = 15;
+              state.asteroidBlocks = 15;
+              state.asteroidBlocksText = '15';
+            }
+
+            state.asteroidHits = 0;
+            state.gameScore = 1;
+            state.gameRank = 'first';
+            state.gameTimeCountDown = state.gameTime;
+            state.gameCountDownToPlay = 3;
+          }, 500);
         }
       }
     },
@@ -199,14 +214,14 @@ export default new Vuex.Store({
       if (!state.hasPerson && !state.gameCompleted) {
         if (attractTimerId) clearTimeout(attractTimerId);
         // No person detected - setting attract timeout
-        attractTimerId = setTimeout(() => {
+        attractTimerId = setTimeout(function() {
           // Resetting - application state to Attract
           state.activeState = 'attract';
           state.gameState = 'inactive';
           state.calibrated = false;
           state.gameCompleted = false;
           state.poseActivated = false;
-        }, totalTimeout);
+        }, state.globalTimeout);
       } else if (state.hasPerson && !state.gameCompleted) {
         // Person Detected - clearing attract timeout
         if (attractTimerId) clearTimeout(attractTimerId);
@@ -218,14 +233,14 @@ export default new Vuex.Store({
       if (state.gameCompleted) {
         if (attractTimerId) clearTimeout(attractTimerId);
         // Game Completed - setting application reset timer
-        attractTimerId = setTimeout(() => {
+        attractTimerId = setTimeout(function() {
           // Reset all states application to attract/intro state
           state.activeState = 'attract';
           state.gameState = 'inactive';
           state.calibrated = false;
           state.gameCompleted = false;
           state.poseActivated = false;
-        }, totalTimeout);
+        }, state.globalTimeout);
       } else if (!state.gameCompleted) {
         if (attractTimerId) clearTimeout(attractTimerId);
       }

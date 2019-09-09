@@ -183,6 +183,10 @@ export default {
       &:nth-child(3) {
         opacity: .75;
       }
+
+      &:nth-child(n+5) {
+        opacity: 0;
+      }
     }
 
     .posenet-text p {

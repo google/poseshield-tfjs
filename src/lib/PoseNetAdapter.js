@@ -200,6 +200,10 @@ class PoseNetAdapter {
         }
       } else {
         this.isPersonDetected = false;
+        if (this.ctx) {
+          this.ctx.clearRect(
+              0, 0, this.canvas.width, this.canvas.height);
+        }
       }
     }
   }
@@ -248,7 +252,7 @@ class PoseNetAdapter {
           } else {
             this.codeOutput.rightShoulder = joint;
           }
-          this.shoulders.push(joint.position.y);
+          this.shoulders.push([joint.position.x, joint.position.y]);
         }
         if ((joint.part === 'leftWrist' || joint.part === 'rightWrist') &&
           joint.score >= this.minPartConfidence) {

@@ -37,10 +37,7 @@ export default {
   methods: {
     handleAnimation: (anim) => {
       animEl = anim;
-      animEl.frameModifier = 0.120;
-      animEl.frameMult = 0.120;
-      animEl.frameRate = 120;
-      animEl.setSpeed(0.15);
+      animEl.setSpeed(0.85);
     },
   },
   watch: {
@@ -55,8 +52,7 @@ export default {
         && store.state.gameState == 'error') {
         animEl.pause();
       } else if (store.state.activeState == 'game'
-        && (store.state.gameState == 'playing'
-        || store.state.gameState == 'countdown')) {
+        && store.state.gameState == 'playing') {
         animEl.play();
       }
     },

@@ -1,12 +1,15 @@
 <template>
   <div id="share-link">
-    <div class="share-code" v-if="sharing === true"></div>
+    <div class="share-code"
+      v-if="share_qr === true"
+    ></div>
     <div class="share-text"
-      :sharing="sharing"
+      :share_qr="share_qr"
+      v-if="share_link === true || share_qr === true"
     >
       <div class="share-text-wrapper">
         <p class="tiny">{{ $t('share.share-text') }}</p>
-        <a :href="$t('share.share-url')"
+        <a v-if="share_link === true" :href="$t('share.share-url')"
           target="_blank"
           :alt="$t('share.share-link')"
           class="tiny">
@@ -33,12 +36,13 @@ export default {
       'gameCompleted',
       'asteroidHits',
       'asteroidCounter',
-      'sharing',
+      'share_qr',
+      'share_link',
     ]),
   },
   watch: {
     activeState() {
-      if (store.state.gameCompleted && store.state.sharing) {
+      if (store.state.gameCompleted && store.state.share_qr) {
         const qrCodeDiv = document.querySelector('.share-code');
         const url = this.createTweetURL();
         this.createQRCode(qrCodeDiv, url);
@@ -47,7 +51,7 @@ export default {
   },
   methods: {
     createTweetText() {
-      const tweetText = store.state.venue + '-text';
+      const tweetText = 'web-text';
       let text = textData.share[tweetText];
       text = text.replace(/<score>/g, store.state.asteroidBlocksText);
       const rank = textData.ranks[store.state.gameRank];
@@ -125,7 +129,7 @@ export default {
       }
     }
 
-    &[sharing='true'] {
+    &[share_qr='true'] {
       margin-left: 0;
       text-align: left;
       width: 23.6448216666667vw;

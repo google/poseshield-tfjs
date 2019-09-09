@@ -3,7 +3,7 @@
   PoseNet.
   ZoneDetector is initialized in App.vue and is passed a video stream
   and the state machine's store object. It gets data from
-  PoseNet via the PosenetAdapter.js and updates the state machine
+  PoseNet via PosenetAdapter.js and updates the state machine
   accordingly for rendering and gameplay on the front end.
 
   Usage:
@@ -31,7 +31,7 @@ export default {
       // the model you would like to use
       // settings can be changed using url parameters, refer to README
       // for more details
-      const ModelConfig = {
+      this.modelConfig = {
         architecture: 'MobileNetV1',
         outputStride: this.store.state.modelStride,
         inputResolution: this.store.state.inputResolution,
@@ -43,16 +43,16 @@ export default {
       this.adapter =
         new PoseNetAdapter(
             videoStream,
-            ModelConfig,
+            this.modelConfig,
             this.store.state.minPartConfidence,
             this.store.state.minPoseConfidence,
         );
-      this.calibrated = false;
       this.updateZonesToggle = true;
       this.cavnas = null;
       this.ctx = null;
       this.frameCount = 0;
       this.request = null;
+      this.reset = false;
       this.videoHeight = videoStream.height;
       this.videoStream = videoStream;
       this.videoWidth = videoStream.width;
@@ -121,7 +121,6 @@ export default {
         this.store.state.zoneDetectedFive &&
         this.store.state.zoneDetectedSix &&
         this.store.state.zoneDetectedSeven) {
-        this.calibrated = true;
         this.store.commit('setCalibrated', true);
       }
     },
@@ -141,21 +140,30 @@ export default {
         this.store.commit('setZoneDetectedLoaded', true);
       }
 
-      if (this.store.state.demoMode) {
-        this.getPose();
-      }
+      this.getPose();
     },
 
     /**
      * Updates the `this.currentPose` and the data in store.
      */
     getPose() {
-      // If the game has been reset, the active state would be attract
-      // but the local `this.calibrated` variable will not have been
-      // rest.
-      if (this.store.state.activateState === 'attract' &&
-        this.calibrated) {
-        this.calibrated = false;
+      // If we have reached the end of the game but not yet restarted
+      // the model
+      if (this.store.state.activeState === 'share' &&
+        !this.reset) {
+        this.reset = true;
+        this.adapter =
+          new PoseNetAdapter(
+              this.videoStream,
+              this.modelConfig,
+              this.store.state.minPartConfidence,
+              this.store.state.minPoseConfidence,
+          );
+        this.adapter.getCanvas(this.canvas, this.ctx);
+      }
+
+      if (this.store.state.activeState === 'attract' && this.reset) {
+        this.reset = false;
       }
 
       if (this.adapter.isPersonDetected &&
@@ -191,7 +199,9 @@ export default {
           this.store.commit('setPoseData', this.adapter.codeOutput);
         }
       }
-      this.adapter.update();
+      if (this.store.state.activeState !== 'share') {
+        this.adapter.update();
+      }
     },
 
     /**
@@ -273,61 +283,94 @@ export default {
      */
     adjustZones() {
       let zoneHeight;
+      let center = this.videoWidth / 2;
+      const oneThird = 1 / 3 * this.videoWidth;
+      const twoThird = 2 / 3 * this.videoWidth;
+      const oneEigth = 1 / 10 * this.videoWidth;
+      const sevenEigth = 9 / 10 * this.videoWidth;
+      let shoulderLeft;
+      let shoulderRight;
+
       if (this.adapter.shoulders.length === 2) {
-        zoneHeight = (this.adapter.shoulders[0] +
-          this.adapter.shoulders[1]) / 2;
+        zoneHeight = (this.adapter.shoulders[0][1] +
+          this.adapter.shoulders[1][1]) / 2;
         zoneHeight = zoneHeight * 2;
+        center = (this.adapter.shoulders[0][0] +
+          this.adapter.shoulders[1][0]) / 2;
       } else {
         zoneHeight = this.videoHeight;
       }
+
+
+      shoulderLeft = oneThird;
+      shoulderRight = twoThird;
+
+      if (this.adapter.shoulders.length == 2) {
+        shoulderLeft = this.adapter.shoulders[0][0];
+        shoulderRight = this.adapter.shoulders[1][0];
+      } else {
+        shoulderLeft = oneThird;
+        shoulderRight = twoThird;
+      }
+
       this.zone_one.polygon = [
         [0, zoneHeight],
         [0, 2 / 3 * zoneHeight],
-        [1 / 2 * this.videoWidth, 2 / 3 * zoneHeight],
-        [1 / 2 * this.videoWidth, zoneHeight],
+        [center, 2 / 3 * zoneHeight],
+        [center, zoneHeight],
       ];
 
       this.zone_two.polygon = [
         [0, 2 / 3 * zoneHeight],
         [0, 1 / 2 * zoneHeight],
-        [3 / 8 * this.videoWidth, 1 / 2 * zoneHeight],
-        [3 / 8 * this.videoWidth, 2 / 3 * zoneHeight],
+        [shoulderLeft, 1 / 2 * zoneHeight],
+        [shoulderLeft, 2 / 3 * zoneHeight],
       ];
 
       this.zone_three.polygon = [
         [0, 0],
-        [3 / 8 * this.videoWidth, 0],
-        [3 / 8 * this.videoWidth, 1 / 2 * zoneHeight],
+        [oneEigth, 0],
+        [shoulderLeft, 1 / 2 * zoneHeight],
         [0, 1 / 2 * zoneHeight],
       ];
 
       this.zone_four.polygon = [
-        [3 / 8 * this.videoWidth, 0],
-        [5 / 8 * this.videoWidth, 0],
-        [5 / 8 * this.videoWidth, 1 / 2 * zoneHeight],
-        [3 / 8 * this.videoWidth, 1 / 2 * zoneHeight],
+        [oneEigth, 0],
+        [sevenEigth, 0],
+        [shoulderRight, 1 / 2 * zoneHeight],
+        [shoulderLeft, 1 / 2 * zoneHeight],
       ];
 
       this.zone_five.polygon = [
-        [5 / 8 * this.videoWidth, 0],
+        [sevenEigth, 0],
         [this.videoWidth, 0],
         [this.videoWidth, 1 / 2 * zoneHeight],
-        [5 / 8 * this.videoWidth, 1 / 2 * zoneHeight],
+        [shoulderRight, 1 / 2 * zoneHeight],
       ];
 
       this.zone_six.polygon = [
-        [5 / 8 * this.videoWidth, 1 / 2 * zoneHeight],
+        [shoulderRight, 1 / 2 * zoneHeight],
         [this.videoWidth, 1 / 2 * zoneHeight],
         [this.videoWidth, 2 / 3 * zoneHeight],
-        [5 / 8 * this.videoWidth, 2 / 3 * zoneHeight],
+        [shoulderRight, 2 / 3 * zoneHeight],
       ];
 
       this.zone_seven.polygon = [
-        [1 / 2 * this.videoWidth, 2 / 3 * zoneHeight],
+        [center, 2 / 3 * zoneHeight],
         [this.videoWidth, 2 / 3 * zoneHeight],
         [this.videoWidth, zoneHeight],
-        [1 / 2 * this.videoWidth, zoneHeight],
+        [center, zoneHeight],
       ];
+    },
+
+    /**
+     * Updates video width and height
+     * @param {Number} width
+     * @param {Number} height
+     */
+    updateDimensions(width, height) {
+      this.videoWidth = width;
+      this.videoHeight = height;
     },
 
     /**

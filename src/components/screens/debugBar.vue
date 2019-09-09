@@ -107,7 +107,7 @@ export default {
 
   h3 {
     font-size: .625vw;
-    margin: 0 0 5px;
+    margin: 0 0 .2604166666667vw;
     padding: 0;
   }
 

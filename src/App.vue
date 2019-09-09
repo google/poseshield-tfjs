@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :mode="mode" :hideCursor="hideCursor">
     <div class="app-container">
       <main-layout></main-layout>
       <bg></bg>
@@ -155,6 +155,7 @@ let beginTime;
 let prevTime;
 let timeTrackerRafId;
 let counter = 0;
+const zd = ZoneDetector;
 
 export default {
   components: {
@@ -166,7 +167,7 @@ export default {
   computed: {
     ...mapState(['activeState', 'gameState', 'hasPerson',
       'poseActivated', 'calibrated', 'gameCompleted',
-      'videoFeed', 'zoneDetectInstance']),
+      'videoFeed', 'zoneDetectInstance', 'mode', 'hideCursor']),
   },
 
   watch: {
@@ -285,6 +286,11 @@ export default {
 
       timeTrackerRafId = requestAnimationFrame( this.startGameTimer );
     },
+    resizeVideo() {
+      this.video.width = window.innerWidth / 3;
+      this.video.height = this.video.width;
+      zd.methods.updateDimensions(this.video.width, this.video.height);
+    },
   },
   data() {
     return {
@@ -292,37 +298,66 @@ export default {
     };
   },
   created() {
-    store.state.sharing = settings['sharing'];
+    store.state.share_qr = settings['share-qr'];
+    store.state.share_link = settings['share-link'];
+
+    if (settings['sharing'] === false) {
+      store.state.share_qr = false;
+      store.state.share_link = false;
+    }
+
+    if (settings['timeout'] >= 10 && settings['timeout'] <= 120) {
+      store.state.globalTimeout = settings['timeout'] * 1000;
+    }
+
     store.state.asteroidGroup = settings['asteroid-group'];
     store.state.modelStride = settings['model-stride'];
     store.state.multiplier = settings['multiplier'];
     store.state.minPartConfidence = settings['min-part-conf'];
     store.state.minPoseConfidence = settings['min-pose-conf'];
     store.state.inputResolution = settings['input-res'];
-    store.state.venue = settings['venue'];
+    store.state.mode = settings['mode'];
+    store.state.hideCursor = settings['hide-cursor'];
+
+    store.state.speed = settings['speed'];
+    if (store.state.speed == 'frantic') {
+      store.state.asteroidCounter = 60;
+      store.state.asteroidTotalCount = 60;
+      store.state.asteroidBlocks = 60;
+      store.state.asteroidBlocksText = '60';
+    } else if (store.state.speed == 'relaxed') {
+      store.state.asteroidCounter = 15;
+      store.state.asteroidTotalCount = 15;
+      store.state.asteroidBlocks = 15;
+      store.state.asteroidBlocksText = '15';
+    }
   },
   mounted() {
     this.video = document.getElementById('hidden');
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
-        // Add video feed to the store
-        store.commit('setVideoFeed', stream);
-        // Initialize ZoneDetector and PoseNet
-        stream.width = 500;
-        stream.height = 400;
+    document.onreadystatechange = () => {
+      if (document.readyState == 'complete') {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
+            // Add video feed to the store
+            store.commit('setVideoFeed', stream);
+            // Initialize ZoneDetector and PoseNet
+            stream.width = 500;
+            stream.height = 400;
 
-        this.video.srcObject = stream;
-        this.video.width = window.innerWidth / 3;
-        this.video.height = this.video.width;
+            this.video.srcObject = stream;
+            this.video.width = window.innerWidth / 3;
+            this.video.height = this.video.width;
 
-        const zd = ZoneDetector;
-        zd.methods.initialize(this.video, store);
-        store.commit('setZoneDetectedInstance', zd);
-      }).catch((err) => {
-        store.state.noVideo = true;
-        store.commit('setStates');
-      });
-    }
+            zd.methods.initialize(this.video, store);
+            store.commit('setZoneDetectedInstance', zd);
+          }).catch((err) => {
+            store.state.noVideo = true;
+            store.commit('setStates');
+          });
+        }
+      }
+    };
+    window.addEventListener('resize', this.resizeVideo);
   },
 };
 </script>
@@ -389,6 +424,10 @@ body {
 
   video#hidden {
     display: none;
+  }
+
+  &[hideCursor='true'] {
+    cursor: none;
   }
 }
 </style>

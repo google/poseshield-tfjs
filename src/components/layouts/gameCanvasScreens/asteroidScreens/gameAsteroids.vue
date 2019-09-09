@@ -72,13 +72,19 @@ let gameAsteroidContainer;
 const baseCanvasHeight = 1080;
 const baseCanvasWidth = 1280;
 
+let asteroidTotalTime = 2;
 const flightPaths = flightPathData;
 const asteroids = [];
 const shields = [];
 const shieldCount = 7;
 
 let gameTimeline = [];
-const masterTimeline = new TimelineMax();
+let masterTimeline = new TimelineMax({
+  autoRemoveChildren: true,
+  smoothChildTiming: true,
+});
+masterTimeline.pause(null, false);
+
 let asteroidData;
 
 export default {
@@ -109,15 +115,21 @@ export default {
     ...mapState([
       'activeState',
       'gameState',
+      'speed',
     ]),
     asteroidCount() {
       return store.state.asteroidTotalCount;
     },
   },
   beforeCreate() {
+    if (store.state.speed == 'frantic') {
+      asteroidTotalTime = 1;
+    } else if (store.state.speed == 'relaxed') {
+      asteroidTotalTime = 4;
+    }
+
     for (let i = 1; i <= store.state.asteroidTotalCount; i++ ) {
       let asteroidArray = {};
-
       asteroidArray = {
         id: i,
         container: false,
@@ -129,7 +141,6 @@ export default {
 
     for (let j = 1; j <= shieldCount; j++ ) {
       let shieldArray = {};
-
       shieldArray = {
         zone: j,
         collisionHit: false,
@@ -167,9 +178,8 @@ export default {
       const arrayId = id - 1;
       const type = animationData.wrapper.getAttribute('data-type');
       const anim = animationData;
-      anim.frameModifier = 0.120;
-      anim.frameMult = 0.120;
-      anim.frameRate = 120;
+
+      anim.setSpeed(1);
 
       if (type == 'hit') {
         shields[arrayId].collisionHitAnim = anim;
@@ -181,22 +191,31 @@ export default {
       const vm = this;
 
       for (let i = 0; i < asteroids.length; i++ ) {
-        gameTimeline[i] = new TimelineMax();
+        gameTimeline[i] = new TimelineMax({
+          autoRemoveChildren: true,
+          smoothChildTiming: true,
+        });
 
         // Set Asteroid data from asteroids array
         const asteroid = asteroids[i];
         const asteroidContainer = asteroid.container;
         const asteroidOne = asteroid.asteroidOne;
         const asteroidTwo = asteroid.asteroidTwo;
-        let asteroidToAnimate;
 
         // Set Asteroid Animation/Zone data from asteroid json file
         const asteroidAnimData = asteroidData[i];
         const zone = asteroidAnimData.hit_zone[0];
         const asteroidDesign = asteroidAnimData.design;
-        const duration =
+        let duration =
           (asteroidAnimData.duration >= 1) ? asteroidAnimData.duration : 1;
-        const delay = 2 - duration;
+
+        if (store.state.speed == 'frantic') {
+          duration = .5;
+        } else if (store.state.speed == 'relaxed') {
+          duration = 3;
+        }
+
+        const delay = asteroidTotalTime - duration;
         const rotation = asteroidAnimData.rotation;
 
         // Set asteroid flight data from flight
@@ -208,6 +227,11 @@ export default {
         const endTop = flightPaths[zone]['paths'][0]['end']['top'];
         const hitZoneLeft = flightPaths[zone]['paths'][0]['hitzone']['left'];
         const hitZoneTop = flightPaths[zone]['paths'][0]['hitzone']['top'];
+        const percent = flightPaths[zone]['paths'][0]['hitzone']['percent'];
+
+        const duration1 = duration * percent;
+        const duration2 = duration * (1 - percent);
+        const rotation1 = rotation * percent;
 
         const startLeftVal = (startLeft/baseCanvasWidth) * 100;
         const startTopVal = (startTop/baseCanvasHeight) * 100;
@@ -219,125 +243,85 @@ export default {
         const endLeftPerc = endLeftVal.toString()+'%';
         const endTopPerc = endTopVal.toString()+'%';
 
-        const hitY = (hitZoneTop/baseCanvasHeight) * 100;
-        const hitX = (hitZoneLeft/baseCanvasWidth) * 100;
+        const hitTop = (hitZoneTop/baseCanvasHeight) * 100;
+        const hitLeft = (hitZoneLeft/baseCanvasWidth) * 100;
+        const hitLeftPerc = hitLeft.toString()+'%';
+        const hitTopPerc = hitTop.toString()+'%';
 
         if (asteroidDesign === 1) {
-          asteroidToAnimate = asteroidOne;
           asteroidOne.classList.add('show');
           asteroidTwo.classList.remove('show');
         } else {
-          asteroidToAnimate = asteroidTwo;
           asteroidOne.classList.remove('show');
           asteroidTwo.classList.add('show');
         }
 
-        gameTimeline[i].fromTo(
+        gameTimeline[i].set(
             asteroidContainer,
-            duration,
             {
               left: startLeftPerc,
               top: startTopPerc,
-            },
-            {
-              left: endLeftPerc,
-              top: endTopPerc,
-              ease: Linear.easeInOut,
-              delay: delay,
-              useFrames: true,
-              onUpdate: function() {
-                const currentX =
-                  (asteroidContainer.getBoundingClientRect().x
-                  /gameAsteroidContainer.getBoundingClientRect().width)
-                  * 100;
-                const currentY =
-                  (asteroidContainer.getBoundingClientRect().y
-                  /gameAsteroidContainer.getBoundingClientRect().height)
-                   * 100;
-                if (zone == 4 && currentY >= hitY ) {
-                  gameTimeline[i].pause();
-                  if (store.state.zoneDetectedFour === true) {
-                    sendBlock();
-                  } else {
-                    gameTimeline[i].resume();
-                  }
-                } else if (zone === 1 && (currentX >= hitX)) {
-                  gameTimeline[i].pause();
-                  if (store.state.zoneDetectedOne === true) {
-                    sendBlock();
-                  } else {
-                    gameTimeline[i].resume();
-                  }
-                } else if (zone === 2 && (currentX >= hitX)) {
-                  gameTimeline[i].pause();
-                  if (store.state.zoneDetectedTwo === true) {
-                    sendBlock();
-                  } else {
-                    gameTimeline[i].resume();
-                  }
-                } else if (zone ===3 && (currentX >= hitX)) {
-                  gameTimeline[i].pause();
-                  if (store.state.zoneDetectedThree === true) {
-                    sendBlock();
-                  } else {
-                    gameTimeline[i].resume();
-                  }
-                } else if (zone === 5 && (currentX <= hitX)) {
-                  gameTimeline[i].pause();
-                  if (store.state.zoneDetectedFive === true) {
-                    sendBlock();
-                  } else {
-                    gameTimeline[i].resume();
-                  }
-                } else if (zone === 6 && (currentX <= hitX)) {
-                  gameTimeline[i].pause();
-                  if (store.state.zoneDetectedSix === true) {
-                    sendBlock();
-                  } else {
-                    gameTimeline[i].resume();
-                  }
-                } else if (zone ===7 && (currentX <= hitX)) {
-                  gameTimeline[i].pause();
-                  if (store.state.zoneDetectedSeven === true) {
-                    sendBlock();
-                  } else {
-                    gameTimeline[i].resume();
-                  }
-                }
-
-                /**
-                 * Method to send a single block message
-                 */
-                function sendBlock() {
-                  gameTimeline[i].clear();
-                  asteroidToAnimate.classList.remove('show');
-                  asteroidContainer.style.left = hitX;
-                  asteroidContainer.style.top = hitY;
-                  vm.sendCollision(i, zone, 'block');
-                }
-              },
-              onComplete: function() {
-                asteroids[i].asteroidOne.classList.remove('show');
-                asteroids[i].asteroidTwo.classList.remove('show');
-                vm.sendCollision(i, zone, 'hit');
-              },
-            },
-            0
-        ).fromTo(
-            asteroidToAnimate,
-            duration,
-            {
               rotation: 1,
-            },
-            {
-              rotation: rotation,
               delay: delay,
-              ease: Linear.easeInOut,
-              useFrames: true,
             },
             0
         );
+
+        gameTimeline[i].to(
+            asteroidContainer,
+            duration1,
+            {
+              left: hitLeftPerc,
+              top: hitTopPerc,
+              rotation: rotation1,
+              ease: Linear.easeNone,
+              onComplete: vm.hitBlockChecker,
+              onCompleteParams: [
+                i,
+                zone,
+                gameTimeline[i],
+                asteroidContainer,
+                duration2,
+                endLeftPerc,
+                endTopPerc,
+                rotation,
+              ],
+            }
+        );
+
         masterTimeline.add(gameTimeline[i]);
+      }
+    },
+    hitBlockChecker(i, zone, gtl, asteroidContainer,
+        duration2, endLeftPerc, endTopPerc, rotation) {
+      const self = this;
+      let hitBlock = 'hit';
+
+      if ((zone == 1 && store.state.zoneDetectedOne === true)
+      || (zone == 2 && store.state.zoneDetectedTwo === true)
+      || (zone == 3 && store.state.zoneDetectedThree === true)
+      || (zone == 4 && store.state.zoneDetectedFour === true)
+      || (zone == 5 && store.state.zoneDetectedFive === true)
+      || (zone == 6 && store.state.zoneDetectedSix === true)
+      || (zone == 7 && store.state.zoneDetectedSeven === true)) {
+        hitBlock = 'block';
+      }
+
+      if (hitBlock == 'block') {
+        self.sendCollision(i, zone, 'block');
+      } else {
+        gtl.to(
+            asteroidContainer,
+            duration2,
+            {
+              left: endLeftPerc,
+              top: endTopPerc,
+              rotation: rotation,
+              ease: Linear.easeNone,
+              onComplete: self.sendCollision,
+              onCompleteParams: [i, zone, 'hit'],
+            }
+        );
       }
     },
     sendCollision(i, zone, data) {
@@ -346,11 +330,22 @@ export default {
         shield.collisionHitAnim :
         shield.collisionBlockAnim;
 
+      asteroids[i].asteroidOne.classList.remove('show');
+      asteroids[i].asteroidTwo.classList.remove('show');
+
       anim.goToAndPlay(0);
       store.commit('asteroidCollision', data);
     },
     cleanUpAsteroids() {
       masterTimeline.clear();
+      masterTimeline = null;
+      masterTimeline = new TimelineMax({
+        autoRemoveChildren: true,
+        smoothChildTiming: true,
+      });
+
+      masterTimeline.pause(null, false);
+
       gameTimeline = [];
 
       for (let i = 1; i <= store.state.asteroidTotalCount; i++ ) {
@@ -371,27 +366,30 @@ export default {
   watch: {
     activeState() {
       if (store.state.activeState == 'game') {
-        gameAsteroidContainer.classList.remove('hide');
-
         let asteroidDataNum;
         if (store.state.asteroidGroup === 0 || store.state.asteroidGroup > 5) {
           asteroidDataNum = Math.floor(Math.random() * 5) + 1;
         } else {
           asteroidDataNum = store.state.asteroidGroup;
         }
-
         asteroidData = asteroidDataArray[asteroidDataNum].asteroids;
+        gameAsteroidContainer.classList.remove('hide');
       } else {
-        this.cleanUpAsteroids();
+        if (gameTimeline.length > 0) {
+          this.cleanUpAsteroids();
+        }
         gameAsteroidContainer.classList.add('hide');
       }
     },
     gameState() {
-      if (store.state.gameState == 'playing') {
-        this.gameAsteroidBuilder();
-        masterTimeline.resume();
+      if (gameTimeline.length > 0 && store.state.gameState == 'playing') {
+        masterTimeline.play(null, false);
       } else if (store.state.gameState == 'error') {
-        masterTimeline.pause();
+        if (!masterTimeline.paused()) {
+          masterTimeline.pause(null, false);
+        }
+      } else {
+        this.gameAsteroidBuilder();
       }
     },
   },
@@ -408,8 +406,10 @@ export default {
   z-index: 30;
 
   #game-asteroids-container {
+    height: 100%;
     opacity: 1;
     transition: opacity .5s cubic-bezier(.7, 0, .3, 1) 0s;
+    width: 100%;
 
     .asteroid {
       display: none;
@@ -426,6 +426,10 @@ export default {
   }
 
   #game-collisions {
+    .block-wrapper {
+      opacity: .75;
+    }
+
     .hit-wrapper,
     .block-wrapper {
       height: 5.8333333333333vw;

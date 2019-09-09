@@ -38,6 +38,8 @@ export default {
   mounted() {
     this.video = this.$refs.video;
     this.canvas = this.$refs.canvas;
+    window.addEventListener('resize', this.resizeCanvas);
+    this.resizeCanvas();
   },
   watch: {
     videoFeed() {
@@ -49,6 +51,12 @@ export default {
       this.canvas.height = this.canvas.width;
       store.state.zoneDetectedInstance.methods.
           drawSkeleton(this.canvas);
+    },
+  },
+  methods: {
+    resizeCanvas() {
+      this.canvas.width = window.innerWidth / 3;
+      this.canvas.height = this.canvas.width;
     },
   },
 };

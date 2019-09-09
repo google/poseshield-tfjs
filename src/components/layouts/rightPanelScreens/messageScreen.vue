@@ -3,13 +3,15 @@
     :activeState="activeState"
     :gameState="gameState"
   >
-    <attract></attract>
-    <calibration></calibration>
-    <error></error>
-    <posenet-data></posenet-data>
-    <share></share>
-    <no-video></no-video>
-    <generic-error></generic-error>
+    <div class="message-wrapper">
+      <attract></attract>
+      <calibration></calibration>
+      <error></error>
+      <posenet-data></posenet-data>
+      <share></share>
+      <no-video></no-video>
+      <generic-error></generic-error>
+    </div>
   </div>
 </template>
 
@@ -54,13 +56,20 @@ export default {
 
 <style lang="scss">
 #message-screen {
-  display: block;
   height: 40.75%;
   left: 0;
   overflow: hidden;
   position: absolute;
   top: 0;
   width: 100%;
+
+  .message-wrapper {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
 
   div.debugger-data {
     bottom: 0;
@@ -136,7 +145,8 @@ export default {
   }
 
   &[activestate='game'] {
-    &[gamestate='playing'] {
+    &[gamestate='playing'],
+    &[gamestate='countdown'] {
       div#posenet-data {
         opacity: 1;
       }

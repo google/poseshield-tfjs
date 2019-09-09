@@ -44,22 +44,31 @@ const modes = {
   'default': {
     'mode': 'default',
     'sharing': true,
+    'share-qr': true,
+    'share-link': true,
     'asteroid-group': 0,
     'model-stride': 16,
     'multiplier': .5,
     'min-part-conf': .5,
     'min-pose-conf': .5,
     'input-res': 257,
-    'venue': 'web',
+    'timeout': 15,
+    'speed': 'default',
+    'hide-cursor': false,
   },
   'kiosk': {
     'mode': 'kiosk',
-    'venue': 'roadshow',
+    'timeout': 30,
+    'hide-cursor': true,
+    'multiplier': .75,
+    'input-res': 417,
   },
   'kiosk-noqr': {
     'mode': 'kiosk-noqr',
-    'venue': 'roadshow',
     'sharing': false,
+    'hide-cursor': true,
+    'multiplier': .75,
+    'input-res': 417,
   },
 };
 
@@ -73,8 +82,12 @@ const modes = {
  *   - valid: optional array of all valid values allowed by the parameter.
  */
 const validSettings = {
-  'venue': {type: 'string', validValues: ['roadshow', 'world', 'web']},
   'sharing': {type: 'bool'},
+  'share-qr': {type: 'bool'},
+  'share-link': {type: 'bool'},
+  'hide-cursor': {type: 'bool'},
+  'timeout': {type: 'int'},
+  'speed': {type: 'string', validValues: ['relaxed', 'frantic']},
   'asteroid-group': {type: 'int', validValues: [0, 1, 2, 3, 4, 5]},
   'model-stride': {type: 'int', validValues: [8, 16]},
   'multiplier': {type: 'float', validValues: [.5, .75, 1]},

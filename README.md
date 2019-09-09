@@ -86,7 +86,10 @@ Parameters can also be set individually. If you set an individual parameter, it
 will override whatever settings came from any mode you may have already chosen.
 
 The available parameters are as follows:
- * `sharing`: true (default) or false. This disables the QR Code that would otherwise be displayed on the share screen at the end of the game.
+ * `share-qr`: true (default) or false. This disables the QR Code that would otherwise be displayed on the share screen at the end of the game.
+ * `share-link`: true (default) or false. This disables the poseshield.withgoogle.com url that would otherwise be displayed on the share screen at the end of the game.
+ * `sharing`: true (default) or false. This adds the ability to disable `share-qr` and `share-link` at once. Will override individual settings.
+ * `timeout`: number of seconds (default = 15, and must be between 10 and 120) the application will wait the timeout duration before resetting states after a game is completed or if no person is detected.
  * `asteroid-group`: value between 0 and 5 (default = 0). This selects a specific asteroid script for gameplay. If set to 0, it will choose randomly between the 5 available scripts.
  * `model-stride`: 8 or 16 (default). Sets the model's output stride. The smaller the number, the more accurate the model but the slower the application.
  * `multiplier`: 0.5 (default), 0.75 or 1.0. Sets the number of channels used for all convolution operations. The larger the number, the more accurate the model but the slower the application.

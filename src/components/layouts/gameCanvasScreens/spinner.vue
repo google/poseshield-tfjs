@@ -11,6 +11,7 @@
 <script>
 // @ is an alias to /src
 import {mapState} from 'vuex';
+import store from '@/store';
 import spinnerSVG from '@/assets/svgs/spinner.svg';
 
 export default {
@@ -18,16 +19,29 @@ export default {
   components: {
     spinnerSVG,
   },
-  mounted() {
+  computed: {
+    ...mapState(['activeState', 'gameState']),
   },
-  computed: mapState([
-    'activeState',
-    'gameState',
-  ]),
+  mounted() {
+    const rootSelector = document.querySelector(':root');
+    const timeoutAsSeconds = (store.state.globalTimeout/1000);
+
+    rootSelector.style.setProperty('--timeout', timeoutAsSeconds+'s');
+  },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@mixin root-prop($prop: null, $value: null) {
+  @if ($prop and $value) {
+    #{$prop}: $value;
+  }
+}
+
+:root {
+  @include root-prop(--timeout, 15s);
+}
+
 #spinner {
   align-items: center;
   background-color: $rbga-navy-mostly;
@@ -86,7 +100,8 @@ export default {
   &[activeState='share'],
   &[gameState='error'] {
     .progress-value {
-      animation: dash 30s linear forwards;
+      animation: dash var(--timeout) linear forwards;
+      animation-delay: 0s;
     }
   }
 
